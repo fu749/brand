@@ -36,24 +36,22 @@ export default {
             try {
                 const response = await this.$http.get('http://localhost:8082/webShop/BrandServlet', {
                     params: {
-                        page: this.currentPage,
-                        pageSize: this.pageSize,
-                        companyName: this.searchForm.companyName,
+                        page: this.currentPage, // 当前页
+                        pageSize: this.pageSize, // 每页条数
+                        companyName: this.searchForm.companyName, // 搜索条件
                         brandName: this.searchForm.brandName,
                         status: this.searchForm.status,
                     }
                 });
 
-                // 确保 response.data 是一个包含数组的对象
-                if (response.data && Array.isArray(response.data.data)) {
-                    // 格式化数据，添加 statusStr 字段
-                    this.tableData = response.data.data.map(item => {
-                        return {
-                            ...item,
-                            statusStr: item.status === 1 ? '启用' : '禁用',  // 转换 status 为状态字符串
-                        };
-                    });
-                    this.total = response.data.data.length;  // 假设后端返回的数组长度是总数据数
+                // 确保后端响应数据格式正确
+                if (response.data && response.data.data) {
+                    const { total, list } = response.data.data;
+                    this.total = total; // 设置总数据条数
+                    this.tableData = list.map(item => ({
+                        ...item,
+                        statusStr: item.status === 1 ? '启用' : '禁用', // 转换状态
+                    }));
                     console.log('数据加载成功:', this.tableData);
                 } else {
                     console.error('数据格式错误:', response.data);
@@ -68,6 +66,7 @@ export default {
         handleSizeChange(val) {
             console.log('分页大小变化:', val);
             this.pageSize = val;
+            this.currentPage = 1; // 重置当前页为第一页
             this.fetchTableData();
         },
         // 处理当前页变化
