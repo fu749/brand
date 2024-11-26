@@ -75,6 +75,7 @@ export default {
                     }
 
                     //跳转到主页
+                    this.$emit('update-username', this.form.username); // 通过事件更新父组件的 username
                     this.$router.push('/');
 
                 } else {
