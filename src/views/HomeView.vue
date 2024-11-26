@@ -36,8 +36,8 @@
     >
       <el-table-column type="selection" width="55"></el-table-column>
       <el-table-column type="index" width="50"></el-table-column>
-      <el-table-column align="center" prop="brandName" label="品牌名称"></el-table-column>
-      <el-table-column align="center" prop="companyName" label="企业名称"></el-table-column>
+      <el-table-column align="center" prop="brand_name" label="品牌名称"></el-table-column>
+      <el-table-column align="center" prop="company_name" label="企业名称"></el-table-column>
       <el-table-column align="center" prop="ordered" label="排序"></el-table-column>
       <el-table-column align="center" prop="statusStr" label="当前状态"></el-table-column>
       <el-table-column align="center" prop="operation" label="操作">
@@ -66,10 +66,10 @@
         :before-close="handleClose"
     >
       <el-form :model="brandForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="品牌名称" prop="brandName">
+        <el-form-item label="品牌名称" prop="brand_name">
           <el-input v-model="brandForm.brandName"></el-input>
         </el-form-item>
-        <el-form-item label="企业名称" prop="companyName">
+        <el-form-item label="企业名称" prop="company_name">
           <el-input v-model="brandForm.companyName"></el-input>
         </el-form-item>
         <el-form-item label="排序">
