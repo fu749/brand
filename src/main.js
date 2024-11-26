@@ -2,9 +2,10 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import ElementUI from 'element-ui';
-// 引入element-ui全部css
 import 'element-ui/lib/theme-chalk/index.css';
-
+import axios from 'axios';
+import BrandList from '/src/components/brands/BrandList.vue';
+Vue.prototype.$http = axios;
 // 关闭Vue的生产提示
 Vue.config.productionTip = false;
 
