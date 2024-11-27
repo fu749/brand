@@ -30,12 +30,15 @@
     <!-- 表格展示品牌信息 -->
     <el-table
         :data="tableData"
+        v-loading="loading"
+        element-loading-text="拼命加载中"
+        element-loading-spinner="el-icon-loading"
         style="width: 100%"
         :row-class-name="tableRowClassName"
         @select="checkSelect"
     >
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column type="index" width="50"></el-table-column>
+      <el-table-column align="center" prop="id" label="品牌号" width="70"></el-table-column>
       <el-table-column align="center" prop="brand_name" label="品牌名称"></el-table-column>
       <el-table-column align="center" prop="company_name" label="企业名称"></el-table-column>
       <el-table-column align="center" prop="ordered" label="排序"></el-table-column>

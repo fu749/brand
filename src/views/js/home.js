@@ -28,11 +28,13 @@ export default {
                 ],
                 companyName: [{ required: true, message: '请输入企业名称', trigger: 'blur' }],
             },
+            loading: false, // 添加加载状态
         };
     },
     methods: {
         // 请求后端数据
         async fetchTableData() {
+            this.loading = true; // 开始加载时设置为 true
             try {
                 const response = await this.$http.get('http://localhost:8082/webShop/BrandServlet', {
                     params: {
@@ -60,6 +62,8 @@ export default {
             } catch (error) {
                 console.error('数据加载失败:', error);
                 this.tableData = [];
+            } finally {
+                this.loading = false; // 数据加载完成后设置为 false
             }
         },
         // 处理分页大小变化
