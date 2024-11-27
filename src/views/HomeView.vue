@@ -7,6 +7,7 @@
     <el-form :inline="true" :model="searchForm" class="demo-form-inline">
       <el-form-item label="当前状态">
         <el-select v-model="searchForm.status" placeholder="当前状态">
+          <el-option label="全部" value=""></el-option>
           <el-option label="启用" value="1"></el-option>
           <el-option label="禁用" value="0"></el-option>
         </el-select>

@@ -83,8 +83,11 @@ export default {
             console.log(JSON.stringify(this.brandForm));
         },
         onSubmit() {
-            console.log('搜索条件:', this.searchForm);
-            this.fetchTableData(); // 提交搜索条件并重新加载数据
+            const { companyName, brandName } = this.searchForm;
+            this.searchForm.companyName = companyName.trim();
+            this.searchForm.brandName = brandName.trim();
+            this.currentPage = 1; // 重置为第一页
+            this.fetchTableData();
         },
         handleClose() {
             this.dialogVisible = false;
