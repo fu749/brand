@@ -4,6 +4,12 @@
 <template>
   <div>
     <!-- 查询表单 -->
+    <div class="headTop"><span
+        v-for="(char, index) in coloredText"
+        :key="index"
+        :style="{ color: index % 2 === 0 ? 'red' : 'blue' }">
+      {{ char }}
+    </span></div>
     <el-form :inline="true" :model="searchForm" class="demo-form-inline">
       <el-form-item label="当前状态">
         <el-select v-model="searchForm.status" placeholder="当前状态">
@@ -26,7 +32,7 @@
 
     <!-- 操作按钮 -->
     <el-button type="danger" @click="delBatch()" plain>批量删除</el-button>
-    <el-button type="primary" @click="dialogVisible = true" plain>新增</el-button>
+    <el-button type="primary" @click="addBrand()" plain>新增</el-button>
 
     <!-- 表格展示品牌信息 -->
     <el-table
@@ -45,8 +51,10 @@
       <el-table-column align="center" prop="ordered" label="排序"></el-table-column>
       <el-table-column align="center" prop="statusStr" label="当前状态"></el-table-column>
       <el-table-column align="center" prop="operation" label="操作">
-        <el-button type="primary" size="small" @click="updateBrand()">修改</el-button>
-        <el-button type="danger" size="small">删除</el-button>
+        <template #default="scope">
+          <el-button type="primary" size="small" @click="updateBrand(scope.row)">修改</el-button>
+          <el-button type="danger" size="small">删除</el-button>
+        </template>
       </el-table-column>
     </el-table>
 
@@ -64,16 +72,16 @@
 
     <!-- 编辑品牌对话框 -->
     <el-dialog
-        title="编辑品牌"
+        :title="dialogTitle"
         :visible.sync="dialogVisible"
         width="30%"
         :before-close="handleClose"
     >
       <el-form :model="brandForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-        <el-form-item label="品牌名称" prop="brand_name">
+        <el-form-item label="品牌名称" prop="brandName">
           <el-input v-model="brandForm.brandName"></el-input>
         </el-form-item>
-        <el-form-item label="企业名称" prop="company_name">
+        <el-form-item label="企业名称" prop="companyName">
           <el-input v-model="brandForm.companyName"></el-input>
         </el-form-item>
         <el-form-item label="排序">
@@ -86,7 +94,7 @@
           <el-switch :active-value="1" :inactive-value="0" v-model="brandForm.status"></el-switch>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm('brandForm')">提交</el-button>
+          <el-button type="primary" @click="submitForm()">提交</el-button>
           <el-button @click="dialogVisible = false">取消</el-button>
         </el-form-item>
       </el-form>

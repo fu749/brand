@@ -2,315 +2,121 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>品牌列表</title>
-    <!--引入vue.js-->
-    <script src="../node_modules/vue/dist/vue.js"></script>
-
-    <!--引入 element js css-->
-    <link rel="stylesheet" href="../node_modules/element-ui/lib/theme-chalk/index.css">
-    <script src="../node_modules/element-ui/lib/index.js"></script>
-    <script src="../node_modules/axios/dist/axios.js"></script>
-
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>品牌管理</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
     <style>
-        .el-table .warning-row {
-            background: oldlace;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
         }
-
-        .el-table .success-row {
-            background: #f0f9eb;
+        .demo-form-inline {
+            margin-bottom: 20px;
         }
-
-        .avatar-uploader .el-upload {
-            border: 1px dashed #d9d9d9;
-            border-radius: 6px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
+        .table-container {
+            margin-top: 20px;
         }
-
-        .avatar-uploader .el-upload:hover {
-            border-color: #409EFF;
+        .el-button {
+            margin-right: 10px;
         }
-
-        .avatar-uploader-icon {
-            font-size: 28px;
-            color: #8c939d;
-            width: 78px;
-            height: 78px;
-            line-height: 78px;
-            text-align: center;
-        }
-
-        .avatar {
-            width: 178px;
-            height: 178px;
-            display: block;
+        .pagination-container {
+            margin-top: 20px;
+            text-align: right;
         }
     </style>
-
 </head>
 <body>
 <div id="app">
+    <!-- 查询表单 -->
+    <form class="demo-form-inline">
+        <label for="status">当前状态:</label>
+        <select id="status" name="status">
+            <option value="">全部</option>
+            <option value="1">启用</option>
+            <option value="0">禁用</option>
+        </select>
 
+        <label for="companyName">企业名称:</label>
+        <input type="text" id="companyName" name="companyName" placeholder="企业名称">
 
-    <el-form :inline="true" :model="searchForm" class="demo-form-inline">
+        <label for="brandName">品牌名称:</label>
+        <input type="text" id="brandName" name="brandName" placeholder="品牌名称">
 
-        <el-form-item label="当前状态">
-            <el-select v-model="searchForm.status" placeholder="当前状态">
-                <el-option label="启用" value="1"></el-option>
-                <el-option label="禁用" value="0"></el-option>
-            </el-select>
-        </el-form-item>
-        <el-form-item label="企业名称">
-            <el-input v-model="searchForm.companyName" placeholder="企业名称"></el-input>
-        </el-form-item>
-        <el-form-item label="品牌名称">
-            <el-input v-model="searchForm.brandName" placeholder="品牌名称"></el-input>
-        </el-form-item>
+        <button type="button" class="el-button el-button--primary">查询</button>
+    </form>
 
-        <el-form-item>
-            <el-button type="primary" @click="onSubmit()">查询</el-button>
-        </el-form-item>
-    </el-form>
+    <!-- 操作按钮 -->
+    <div>
+        <button type="button" class="el-button el-button--danger">批量删除</button>
+        <button type="button" class="el-button el-button--primary">新增</button>
+    </div>
 
-    <el-button type="danger"  @click="delBatch()" plain>批量删除</el-button>
-    <el-button type="primary" @click="dialogVisible = true" plain>新增</el-button>
+    <!-- 表格展示 -->
+    <div class="table-container">
+        <table border="1" cellspacing="0" cellpadding="10" width="100%">
+            <thead>
+            <tr>
+                <th>选择</th>
+                <th>品牌号</th>
+                <th>品牌名称</th>
+                <th>企业名称</th>
+                <th>排序</th>
+                <th>当前状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td><input type="checkbox"></td>
+                <td>1</td>
+                <td>品牌A</td>
+                <td>企业A</td>
+                <td>10</td>
+                <td>启用</td>
+                <td>
+                    <button type="button" class="el-button el-button--primary">修改</button>
+                    <button type="button" class="el-button el-button--danger">删除</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
+    <!-- 分页 -->
+    <div class="pagination-container">
+        <button class="el-button">上一页</button>
+        <span>1 / 10</span>
+        <button class="el-button">下一页</button>
+    </div>
 
-    <template>
-        <el-table
-                :data="tableData"
-                style="width: 100%"
-                :row-class-name="tableRowClassName"
-                @select="checkSelect"
-        >
-            <el-table-column
-                    type="selection"
-                    width="55">
-            </el-table-column>
-            <el-table-column
-                    type="index"
-                    width="50">
-            </el-table-column>
-
-            <el-table-column
-                    align="center"
-                    prop="brandName"
-                    label="品牌名称">
-            </el-table-column>
-
-            <el-table-column
-                    align="center"
-                    prop="companyName"
-                    label="企业名称">
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    prop="ordered"
-                    label="排序">
-            </el-table-column>
-            <el-table-column
-                    align="center"
-                    prop="statusStr"
-                    label="当前状态">
-            </el-table-column>
-
-            <el-table-column
-                    align="center"
-                    prop="operation"
-                    label="操作">
-                <el-button type="primary" size="small" @click="updateBrand()">修改</el-button>
-                <el-button type="danger" size="small">删除</el-button>
-            </el-table-column>
-        </el-table>
-    </template>
-
-    <!--分页工具条-->
-    <el-pagination
-            background
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="currentPage"
-            :page-sizes="[5, 10,15 , 20]"
-            :page-size="pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="total">
-    </el-pagination>
-
-
-    <!--添加/修改表单-->
-    <el-dialog
-            title="编辑品牌"
-            :visible.sync="dialogVisible"
-            width="30%"
-            :before-close="handleClose">
-        <el-form :model="brandForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-
-            <el-form-item label="品牌名称" prop="brandName">
-                <el-input v-model="brandForm.brandName"></el-input>
-            </el-form-item>
-            <el-form-item label="企业名称" prop="companyName">
-                <el-input v-model="brandForm.companyName"></el-input>
-            </el-form-item>
-            <el-form-item label="排序">
-                <el-input v-model="brandForm.ordered"></el-input>
-            </el-form-item>
-            <el-form-item label="备注">
-                <el-input type="textarea" v-model="brandForm.description"></el-input>
-            </el-form-item>
-            <el-form-item label="状态">
-                <el-switch
-                        :active-value=1
-                        :inactive-value=0
-                        v-model="brandForm.status">
-                </el-switch>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="submitForm('brandForm')">提交</el-button>
-                <el-button @click="dialogVisible = false">取消</el-button>
-            </el-form-item>
-        </el-form>
-    </el-dialog>
+    <!-- 编辑对话框 -->
+    <div id="dialog" style="display: none; border: 1px solid #ccc; padding: 20px; width: 300px; margin: auto; background-color: #fff;">
+        <h3>编辑品牌</h3>
+        <form>
+            <label for="brandNameEdit">品牌名称:</label>
+            <input type="text" id="brandNameEdit" placeholder="品牌名称"><br><br>
+            <label for="companyNameEdit">企业名称:</label>
+            <input type="text" id="companyNameEdit" placeholder="企业名称"><br><br>
+            <label for="orderedEdit">排序:</label>
+            <input type="number" id="orderedEdit"><br><br>
+            <label for="statusEdit">状态:</label>
+            <select id="statusEdit">
+                <option value="1">启用</option>
+                <option value="0">禁用</option>
+            </select><br><br>
+            <button type="button" class="el-button el-button--primary">提交</button>
+            <button type="button" class="el-button">取消</button>
+        </form>
+    </div>
 </div>
 
-
 <script>
-    new Vue({
-        el: "#app",
-        methods: {
-            //每页显示条数发生变化
-            handleSizeChange(val) {
-                console.log(val)
-
-            },
-            //当前页发生变化
-            handleCurrentChange(val) {
-                //console.log(`当前页: ${val}`);
-
-            },
-
-            submitForm() {
-                //console.log(JSON.stringify(this.brandForm));
-
-            },
-            //点击查询按钮
-            onSubmit() {
-                // console.log(this.searchForm);
-
-            },
-            handleClose() {
-                this.dialogVisible = false;
-            },
-
-            tableRowClassName({row, rowIndex}) {
-                if (rowIndex === 1) {
-                    return 'warning-row';
-                } else if (rowIndex === 3) {
-                    return 'success-row';
-                }
-                return '';
-            },
-            //批量删除
-            delBatch(){
-
-
-            },
-            //选中复选框
-            checkSelect(data){
-                //console.log(`选中项数据：${data}`)
-
-            },
-            //修改
-            updateBrand() {
-                //弹出编辑窗口
-                this.dialogVisible = true;
-
-
-            }
-        },
-        data() {
-            return {
-                checkedBrands:[],
-                total: 400,
-                currentPage: 1,
-                pageSize: 5,
-                dialogVisible: false,
-                tableData: [{
-                    id: 1,
-                    brandName: '小米',
-                    companyName: '小米科技有限公司',
-                    ordered: 10,
-                    status: 1,
-                    statusStr: "启用",
-                    description: "小米"
-                }, {
-                    id: 1,
-                    brandName: '小米',
-                    companyName: '小米科技有限公司',
-                    ordered: 10,
-                    status: 1,
-                    statusStr: "启用",
-                    description: "小米"
-                }, {
-                    id: 1,
-                    brandName: '小米',
-                    companyName: '小米科技有限公司',
-                    ordered: 10,
-                    status: 1,
-                    statusStr: "启用",
-                    description: "小米"
-                }, {
-                    id: 1,
-                    brandName: '小米',
-                    companyName: '小米科技有限公司',
-                    ordered: 10,
-                    status: 1,
-                    statusStr: "启用",
-                    description: "小米"
-                }, {
-                    id: 1,
-                    brandName: '小米',
-                    companyName: '小米科技有限公司',
-                    ordered: 10,
-                    status: 1,
-                    statusStr: "启用",
-                    description: "小米"
-                }, {
-                    id: 1,
-                    brandName: '小米',
-                    companyName: '小米科技有限公司',
-                    ordered: 10,
-                    status: 1,
-                    statusStr: "启用",
-                    description: "小米"
-                },],
-                value: '',
-                searchForm: {
-                    companyName: '',
-                    brandName: '',
-                    status: ''
-                },
-                brandForm: {
-                    id: '',
-                    brandName: '',
-                    companyName: '',
-                    ordered: '',
-                    status: '',
-                    description: ""
-                },
-                rules: {
-                    brandName: [
-                        {required: true, message: '请输入品牌名称', trigger: 'blur'},
-                        {min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur'}
-                    ],
-                    companyName: [
-                        {required: true, message: '请输入企业名称', trigger: 'blur'}
-                    ]
-                }
-
-            }
-        }
+    // 处理对话框显示/隐藏逻辑
+    document.querySelectorAll('.el-button--primary').forEach(button => {
+        button.addEventListener('click', () => {
+            const dialog = document.getElementById('dialog');
+            dialog.style.display = dialog.style.display === 'none' ? 'block' : 'none';
+        });
     });
 </script>
 </body>
