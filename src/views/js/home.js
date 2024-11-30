@@ -41,6 +41,9 @@ export default {
             return this.text.split(""); // 将字符串拆分为单字符数组
         },
     },
+    mounted() {
+        this.fetchTableData(); // 页面加载时请求数据
+    },
     methods: {
         // 请求后端数据
         async fetchTableData() {
@@ -140,6 +143,7 @@ export default {
         updateBrand(row) {
             this.dialogTitle = '编辑品牌';
             this.isEditMode = true;
+
             if (!row) {
                 console.error('未接收到行数据！');
                 return;
@@ -266,8 +270,6 @@ export default {
 
     },
 
-    mounted() {
-        this.fetchTableData(); // 页面加载时请求数据
-    },
+
 
 };
