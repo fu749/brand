@@ -11,6 +11,7 @@ export default {
             tableData: [],  // 表格数据
             value: '',
             text: "商标列表", // 原始文字
+            selectedBrands: [],
             searchForm: {
                 companyName: '',
                 brandName: '',
@@ -104,12 +105,38 @@ export default {
         tableRowClassName({rowIndex}) {
             return rowIndex % 2 === 0 ? 'even-row' : 'odd-row';
         },
-        delBatch() {
-            console.log('批量删除');
+        checkSelect(selection) {
+            this.selectedBrands = selection;
         },
-        checkSelect(data) {
-            console.log(`选中项数据：${data}`);
+        async delBatch() {
+            if (this.selectedBrands.length === 0) {
+                this.$message.warning('请选择要删除的品牌');
+                return;
+            }
+
+            const idsToDelete = this.selectedBrands.map(item => item.id); // 获取选中的品牌 ID
+            try {
+                const response = await this.$http.post('http://localhost:8082/webShop/DeleteBatchBrands',
+                    idsToDelete,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+
+                if (response.data.success) {
+                    this.$message.success('批量删除成功');
+                    this.fetchTableData(); // 刷新表格数据
+                } else {
+                    this.$message.error('批量删除失败');
+                }
+            } catch (error) {
+                console.error('批量删除失败:', error);
+                this.$message.error('删除失败，请检查网络或联系管理员');
+            }
         },
+
         updateBrand(row) {
             this.dialogTitle = '编辑品牌';
             this.isEditMode = true;
@@ -154,6 +181,11 @@ export default {
         submitForm() {
             console.log('当前表单数据:', this.brandForm);
 
+            // 确保 status 不为空，若为空则设置为 0
+            if (!this.brandForm.status) {
+                this.brandForm.status = 0;
+            }
+
             // 将品牌表单字段转换为后端要求的字段命名
             const formData = {
                 id: this.brandForm.id,
@@ -178,27 +210,23 @@ export default {
 
                         if (response.data && response.data.success) {
                             this.$message.success(this.isEditMode ? '品牌信息更新成功！' : '品牌添加成功！');
-                            // 如果是新增模式，添加到表格数据中
-                            const index = this.tableData.findIndex(item => item.id === this.brandForm.id);
+
+                            // 只有在新增模式下才刷新页面
                             if (!this.isEditMode) {
-                                this.tableData.push({
-                                    ...this.brandForm,
-                                    brand_name: this.brandForm.brandName,
-                                    company_name: this.brandForm.companyName,
-                                    ordered: this.brandForm.ordered,
-                                    statusStr: this.brandForm.status === 1 ? '启用' : '禁用',
-                                    description: this.brandForm.description
-                                });
-                            }
-                            if (index !== -1) {
-                                this.$set(this.tableData, index, {
-                                    ...this.brandForm,
-                                    brand_name: this.brandForm.brandName,
-                                    company_name: this.brandForm.companyName,
-                                    ordered: this.brandForm.ordered,
-                                    statusStr: this.brandForm.status === 1 ? '启用' : '禁用',
-                                    description: this.brandForm.description
-                                });
+                                window.location.reload(); // 刷新页面
+                            } else {
+                                // 编辑模式下，更新表格中的数据
+                                const index = this.tableData.findIndex(item => item.id === this.brandForm.id);
+                                if (index !== -1) {
+                                    this.$set(this.tableData, index, {
+                                        ...this.brandForm,
+                                        brand_name: this.brandForm.brandName,
+                                        company_name: this.brandForm.companyName,
+                                        ordered: this.brandForm.ordered,
+                                        statusStr: this.brandForm.status === 1 ? '启用' : '禁用',
+                                        description: this.brandForm.description
+                                    });
+                                }
                             }
 
                             this.dialogVisible = false; // 关闭对话框
@@ -213,6 +241,27 @@ export default {
                     console.log('表单校验失败');
                 }
             });
+        },
+
+
+        async deleteBrand(id) {
+            try {
+                // 发送删除请求
+                const response = await this.$http.get('http://localhost:8082/webShop/DeleteBrand', { params:{id:id }});
+
+                // 检查后端返回的成功字段
+                if (response.data && response.data.success) {
+                    this.$message.success('品牌删除成功！');  // 显示成功提示
+                    this.fetchTableData();  // 删除后刷新表格数据
+                } else {
+                    // 如果返回失败信息，提示错误
+                    this.$message.error(response.data.message || '删除失败');
+                }
+            } catch (error) {
+                // 捕获并处理异常
+                console.error('删除操作失败:', error);
+                this.$message.error('删除失败，请检查网络或联系管理员');
+            }
         },
 
     },

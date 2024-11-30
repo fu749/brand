@@ -4,16 +4,9 @@
 <template>
   <div>
     <!-- 查询表单 -->
-    <div class="headTop"><span
-        v-for="(char, index) in coloredText"
-        :key="index"
-        :style="{ color: index % 2 === 0 ? 'red' : 'blue' }">
-      {{ char }}
-    </span></div>
     <el-form :inline="true" :model="searchForm" class="demo-form-inline">
       <el-form-item label="当前状态">
         <el-select v-model="searchForm.status" placeholder="当前状态">
-          <el-option label="全部" value=""></el-option>
           <el-option label="启用" value="1"></el-option>
           <el-option label="禁用" value="0"></el-option>
         </el-select>
@@ -32,29 +25,24 @@
 
     <!-- 操作按钮 -->
     <el-button type="danger" @click="delBatch()" plain>批量删除</el-button>
-    <el-button type="primary" @click="addBrand()" plain>新增</el-button>
+    <el-button type="primary" @click="dialogVisible = true" plain>新增</el-button>
 
     <!-- 表格展示品牌信息 -->
     <el-table
         :data="tableData"
-        v-loading="loading"
-        element-loading-text="拼命加载中"
-        element-loading-spinner="el-icon-loading"
         style="width: 100%"
         :row-class-name="tableRowClassName"
         @select="checkSelect"
     >
       <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column align="center" prop="id" label="品牌号" width="70"></el-table-column>
-      <el-table-column align="center" prop="brand_name" label="品牌名称"></el-table-column>
-      <el-table-column align="center" prop="company_name" label="企业名称"></el-table-column>
+      <el-table-column type="index" width="50"></el-table-column>
+      <el-table-column align="center" prop="brandName" label="品牌名称"></el-table-column>
+      <el-table-column align="center" prop="companyName" label="企业名称"></el-table-column>
       <el-table-column align="center" prop="ordered" label="排序"></el-table-column>
       <el-table-column align="center" prop="statusStr" label="当前状态"></el-table-column>
       <el-table-column align="center" prop="operation" label="操作">
-        <template #default="scope">
-          <el-button type="primary" size="small" @click="updateBrand(scope.row)">修改</el-button>
-          <el-button type="danger" size="small" @click="deleteBrand(scope.row.id)">删除 </el-button>
-        </template>
+        <el-button type="primary" size="small" @click="updateBrand()">修改</el-button>
+        <el-button type="danger" size="small">删除</el-button>
       </el-table-column>
     </el-table>
 
@@ -72,7 +60,7 @@
 
     <!-- 编辑品牌对话框 -->
     <el-dialog
-        :title="dialogTitle"
+        title="编辑品牌"
         :visible.sync="dialogVisible"
         width="30%"
         :before-close="handleClose"
@@ -94,7 +82,7 @@
           <el-switch :active-value="1" :inactive-value="0" v-model="brandForm.status"></el-switch>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm()">提交</el-button>
+          <el-button type="primary" @click="submitForm('brandForm')">提交</el-button>
           <el-button @click="dialogVisible = false">取消</el-button>
         </el-form-item>
       </el-form>
