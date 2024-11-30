@@ -6,13 +6,14 @@ const routes = [
     {
         path: '/',
         name: 'home',
-        component: home
+        component: home,
+
     },
     {
         path: '/Login',
         name: 'Login',
         component: Login
+
     }
 ];
-
 export default routes;

@@ -42,6 +42,10 @@ export default {
         },
     },
     mounted() {
+        // if (!localStorage.getItem('username')) {
+        //     this.$message.error('请先登录');
+        //     this.$router.push('/login'); // 跳转到登录页面
+        // }
         this.fetchTableData(); // 页面加载时请求数据
     },
     methods: {
@@ -87,6 +91,11 @@ export default {
             this.fetchTableData();
         },
         addBrand() {
+            if (!localStorage.getItem('username')) {
+                this.$message.error('请先登录');
+                this.$router.push('/login');  // 未登录，跳转到登录页面
+                return;
+            }
             this.dialogTitle = '新增品牌';
             this.isEditMode = false; // 设置为新增模式
             this.resetBrandForm(); // 重置表单
@@ -112,6 +121,11 @@ export default {
             this.selectedBrands = selection;
         },
         async delBatch() {
+            if (!localStorage.getItem('username')) {
+                this.$message.error('请先登录');
+                this.$router.push('/login');  // 未登录，跳转到登录页面
+                return;
+            }
             if (this.selectedBrands.length === 0) {
                 this.$message.warning('请选择要删除的品牌');
                 return;
@@ -141,6 +155,11 @@ export default {
         },
 
         updateBrand(row) {
+            if (!localStorage.getItem('username')) {
+                this.$message.error('请先登录');
+                this.$router.push('/login');  // 未登录，跳转到登录页面
+                return;
+            }
             this.dialogTitle = '编辑品牌';
             this.isEditMode = true;
 
@@ -251,6 +270,11 @@ export default {
         async deleteBrand(id) {
             try {
                 // 发送删除请求
+                if (!localStorage.getItem('username')) {
+                    this.$message.error('请先登录');
+                    this.$router.push('/login');  // 未登录，跳转到登录页面
+                    return;
+                }
                 const response = await this.$http.get('http://localhost:8082/webShop/DeleteBrand', { params:{id:id }});
 
                 // 检查后端返回的成功字段
